@@ -1,2 +1,2 @@
 # UpscaleBot
- A discord bot that upscales images
+A discord bot that upscales images
