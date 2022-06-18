@@ -13,7 +13,7 @@ from os import getenv
 # load dotenv and logging
 load_dotenv(find_dotenv())
 
-# version
+# version and constants
 __version__ = '0.1.0a'
 __changelog__ = f"""
 **{__version__} Changelog**
@@ -22,6 +22,7 @@ __changelog__ = f"""
 - Banned users cannot upscale
 - /info command now shows changelog
 """
+BACKUP_CHANNEL_ID = 972541376375975996
 
 # connect to client and bot
 intents = discord.Intents.default()
@@ -41,9 +42,9 @@ async def on_ready():
 @tasks.loop(hours=24.0) #this task will upload the database as a backup every 24 hours
 async def upload_db():
     global bot
-    #TODO: Fix database uploading
-    db = database.upload(bot)
-    await db.upload_file()
+    id = bot.get_channel(BACKUP_CHANNEL_ID) # 972541376375975996 is the channel id of #db-backups in the Ska's bots server
+    await id.send(file=discord.File('db.json'))
+    await id.send(file=discord.File('log.txt'))
 @upload_db.before_loop
 async def before_upload_db():
     global bot

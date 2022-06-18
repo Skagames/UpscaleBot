@@ -13,4 +13,3 @@ pycparser==2.21
 python-dotenv==0.20.0
 tinydb==4.7.0
 yarl==1.7.2
-lol
