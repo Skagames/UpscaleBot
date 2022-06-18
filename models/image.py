@@ -270,7 +270,6 @@ class apiKeys():
         self.bigjpg_key = getenv('bigjpg')
 
 
-
 # testing
 if __name__ == "__main__":
     ...
