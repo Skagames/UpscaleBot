@@ -98,7 +98,8 @@ async def upscale(ctx,
 # ban command
 @bot.slash_command(guild_ids=[739630717159473192]) #! Do not remove the guild_ids!
 async def ban_user(ctx,
-    user: Option(  # this is image option, aka which image is infringing
+    user: Option( # this is image option, aka which image is infringing
+        str,  
         "The image that infringes the ToS",
         required=True),
     time: Option(  # this is the time option, aka the time you want to ban the user for
