@@ -6,7 +6,7 @@ from dotenv import load_dotenv, find_dotenv
 from os import getenv
 
 # file imports
-from other_files import logging
+from other_files import logging, helpfile
 #TODO: Fix imports
 #from files import securebase, command_upscale, logger, database, command_ban
 #from files import help as helpfile
@@ -94,7 +94,7 @@ async def upscale(ctx,
     #TODO: Complete upscaling rework
     await command_upscale.upscale(ctx=ctx, image=image, x2=amount, noise=noise_reduction, model=model)
 
-
+# * This command is temporarily disabled
 # ban command
 @bot.slash_command(guild_ids=[739630717159473192]) #! Do not remove the guild_ids!
 async def ban_user(ctx,
@@ -113,7 +113,8 @@ async def ban_user(ctx,
         required=False)):
     """Ban a user"""
     #TODO: Completely rework ban system
-    await command_ban.permanent(ctx, user,time,reason)
+    #await command_ban.permanent(ctx, user,time,reason)
+    await ctx.respond(f"This command is temporarily disabled")
 
 #! Remove in main build
 #test command
