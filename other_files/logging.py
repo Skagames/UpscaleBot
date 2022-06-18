@@ -1,9 +1,7 @@
 import datetime
 
-class logging():
-    Logname = 'log.txt'
-    def __init__(self) -> None:
-       self.log = open(self.Logname, 'a')
-    
-    def log(self, message: str) -> None:
-        self.log.write(f"{datetime.datetime.now()} - {message}\n")
+class log():
+    def __init__(self,message) -> None:
+        with open("log.txt", "a") as log:
+            log.write(f"{datetime.datetime.now()} - {message}\n")
+
