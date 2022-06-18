@@ -220,9 +220,6 @@ class image():
             'input': self.chev1
         }
 
-        # get the API key
-        key = apiKeys().bigjpg_key
-
         #upload the image to bigjpg
         async with aiohttp.ClientSession() as session:
             async with session.post(url='https://bigjpg.com/api/task/', headers={'X-API-KEY': key}, data={'conf': json.dumps(form)}) as r:
