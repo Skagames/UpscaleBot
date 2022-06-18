@@ -2,11 +2,16 @@
 import discord
 from discord.ext import commands,tasks
 from discord.commands import Option, permissions
+from dotenv import load_dotenv, find_dotenv
+from os import getenv
 
 # file imports
 #TODO: Fix imports
 #from files import securebase, command_upscale, logger, database, command_ban
 #from files import help as helpfile
+
+# load dotenv and logging
+load_dotenv(find_dotenv())
 
 # version
 __version__ = '0.1.0a'
@@ -17,6 +22,7 @@ __changelog__ = f"""
 - Banned users cannot upscale
 - /info command now shows changelog
 """
+
 # connect to client and bot
 intents = discord.Intents.default()
 bot = commands.Bot(debug_guilds=[739630717159473192],command_prefix='.', intents=intents, help_command=None)
@@ -122,6 +128,5 @@ upload_db.start()
 
 # get bot token and run bot
 #TODO: Fix token
-keys = securebase.apiKeys()
-keys.get()
-bot.run(keys.bot_token)
+token = getenv('bot_token')
+bot.run(token)
