@@ -2,13 +2,19 @@
 import discord
 from discord.ext import commands,tasks
 from discord.commands import Option, permissions
+from dotenv import load_dotenv, find_dotenv
+from os import getenv
 
 # file imports
+from other_files import logging
 #TODO: Fix imports
 #from files import securebase, command_upscale, logger, database, command_ban
 #from files import help as helpfile
 
-# version
+# load dotenv and logging
+load_dotenv(find_dotenv())
+
+# version and constants
 __version__ = '0.1.0a'
 __changelog__ = f"""
 **{__version__} Changelog**
@@ -17,6 +23,8 @@ __changelog__ = f"""
 - Banned users cannot upscale
 - /info command now shows changelog
 """
+BACKUP_CHANNEL_ID = 972541376375975996
+
 # connect to client and bot
 intents = discord.Intents.default()
 bot = commands.Bot(debug_guilds=[739630717159473192],command_prefix='.', intents=intents, help_command=None)
@@ -27,17 +35,16 @@ bot = commands.Bot(debug_guilds=[739630717159473192],command_prefix='.', intents
 async def on_ready():
     print("Logged in as {0.user}".format(bot))
     await bot.change_presence(status=discord.Status.online, activity=discord.Game(f"UB_DevB V{__version__}"))
-    #TODO: Fix Logging
-    log = logger.logging('log.txt')
-    log.log(f"Logged in as {bot.user}")
+    #TODO: Fix Loggin
+    logging.log(f"Logged in as {bot.user}")
 
 #task loop comes here
 @tasks.loop(hours=24.0) #this task will upload the database as a backup every 24 hours
 async def upload_db():
     global bot
-    #TODO: Fix database uploading
-    db = database.upload(bot)
-    await db.upload_file()
+    id = bot.get_channel(BACKUP_CHANNEL_ID) # 972541376375975996 is the channel id of #db-backups in the Ska's bots server
+    await id.send(file=discord.File('db.json'))
+    await id.send(file=discord.File('log.txt'))
 @upload_db.before_loop
 async def before_upload_db():
     global bot
@@ -49,8 +56,7 @@ async def before_upload_db():
 async def ping(ctx):
     """Get bot ping and basic info"""
     await ctx.respond(f"UpscaleBot V{__version__}: ({round((bot.latency * 1000))}ms)\n{__changelog__}")
-    log = logger.logging('log.txt')
-    log.log(f"{ctx.author} used ping command")
+    logging.log(f"{ctx.author} used ping command")
     
 # help command
 @bot.slash_command()
@@ -58,8 +64,7 @@ async def help(ctx):
     """Get help with commands"""
     #TODO: Remake help command
     await helpfile.help(ctx,__version__)
-    log = logger.logging('log.txt')
-    log.log(f"{ctx.author} used help command")
+    logging.log(f"{ctx.author} used help command")
 
 
 # upscale command
@@ -122,6 +127,5 @@ upload_db.start()
 
 # get bot token and run bot
 #TODO: Fix token
-keys = securebase.apiKeys()
-keys.get()
-bot.run(keys.bot_token)
+token = getenv('bot_token')
+bot.run(token)
