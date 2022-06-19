@@ -114,6 +114,10 @@ class user():
         query = Query()
         # get the user
         packed = table.get(query.uid == self.uid)
+        if packed is None:
+            self.free_images = 5
+            self.__save()
+            packed = table.get(query.uid == self.uid)
         self.uid = packed['uid']
         self.total_images = packed['total_images']
         self.joined = packed['joined']

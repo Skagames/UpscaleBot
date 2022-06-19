@@ -48,9 +48,9 @@ class image():
     - __save: saves the image to the database.
     - __pack: packs the image into a dict (for database storage).
 
-    - chev_upload: uploads the image to chevereto. (can be used twice, automatically updates the links)
-    - bigjpg_upload: uploads the image to bigjpg.
-    - bigjpg_download: downloads the image from bigjpg.
+    - Async chev_upload: uploads the image to chevereto. (can be used twice, automatically updates the links)
+    - Async bigjpg_upload: uploads the image to bigjpg.
+    - Async bigjpg_download: downloads the image from bigjpg.
 
     - end_image: ends the image and saves everything to database.
 
@@ -231,8 +231,12 @@ class image():
 
         if self.chev1 is None and self.chev2 is None and self.__rayid is None:
             self.chev1r = await upload_image(self.url)
+            self.chev1 = self.chev1r['url']
+            self.id = self.chev1[32:]
         elif self.chev1 is not None and self.chev2 is None and self.__rayid is not None:
             self.chev2r = await upload_image(self.url)
+            self.chev2 = self.chev2r['url']
+            self.id = self.chev2[32:]
         else:
             raise ValueError("Image already uploaded")
     
@@ -297,6 +301,7 @@ class image():
 
 
     def end_image(self) -> None:
+        self.timestamp2 = time.time()
         self.__save()
         del self # renders the object useless after the image is saved
 
