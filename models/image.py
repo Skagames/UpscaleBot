@@ -38,17 +38,7 @@ class image():
 
     - is_admin_flagged: whether the image is flagged as Tos breaking by an admin.
     - errors: a dict of errors that occured while creating the image.
-
-    - status: the status of the image.
-        - 0: not uploaded to cheveretov1
-        - 1: uploaded to cheveretov1
-        - 2: uploaded to bigjpg
-        - 3: bigjpg processing
-        - 4: bigjpg error
-        - 5: bigjpg processed
-        - 6: uploaded to cheveretov2
-        - 7: general error
-        
+    
     Methods:
 
     - __init__: initialiser for the image class.
@@ -92,7 +82,6 @@ class image():
         self.model = None
         self.is_admin_flagged = False
         self.errors = {}
-        self.status = 0
 
         #TODO Rewrite the kwargs checking
         #check for length of kwargs
@@ -120,7 +109,6 @@ class image():
         
 
     def __str__(self) -> str:
-        #TODO Make this a representation of the database location
         """
         Returns a string representation of the image.
         """
@@ -132,6 +120,15 @@ class image():
         """
         Loads the image from the database.
         """
+        #load the database
+        db = TinyDB(__database__)
+        table = db.table('images')
+        q = Query()
+
+        #get the image from the database
+        packed = table.get(q.id == self.id)
+
+        #unpack the image
         self.uid =  packed['uid']
         self.url = packed['url']
         self.id = packed['id']
@@ -147,7 +144,6 @@ class image():
         self.model = packed['model']
         self.is_admin_flagged = packed['is_admin_flagged']
         self.errors = packed['errors']
-        self.status = packed['status']
 
 
     def __save(self) -> None:
@@ -184,24 +180,73 @@ class image():
             'model': self.model,
             'is_admin_flagged': self.is_admin_flagged,
             'errors': self.errors,
-            'status': self.status
         }
         return packed
 
 
     async def chev_upload(self) -> None:
-        ...
+        """
+        This method will upload to chevereto image1 or image2 under these circumstances:
+        image1:
+            - image1 is not uploaded yet
+        image2:
+            - image1 is uploaded
+            - image2 is not uploaded yet
+            - image has been sent to upscaler
+        """
+        async def upload_image(url):
+            # get API key
+            key = apiKeys().chevereto_key
+            # load website
+            weblink = f'https://skahosting.xyz/c/api/1/upload/?key={key}&source={url}&format=json'
 
+            # get webserver response
+            async with aiohttp.ClientSession() as session:
+                async with session.get(url=weblink) as resp:
+                    # extract result data
+                    try:
+                        r = await resp.json()
+                    except: # in case of Json ContentTypeError
+                        r = await resp.read()
+                        #r = {'status_code':500}
+            print(r)
+            #handle the response
+            if r['status_code'] == 400:
+                """Wrong upload"""
+                return {'status':400,'error_code':r['error']['code']}
+
+            elif r['status_code'] == 200:
+                """Correctly uploaded"""
+                return {
+                        'status':200,
+                        'size':int(r['image']['size']) / 1000000,  # divide size by 1 000 000 for mb
+                        'width':int(r['image']['width']),
+                        'heigth':int(r['image']['height']),
+                        'url':r['image']['url']
+                        }
+
+            else:
+                """Unknown error, error 404 will be returned"""
+                return {'status':400,'error_code':404}
+
+        if self.chev1 is None and self.chev2 is None and self.__rayid is None:
+            self.chev1r = await upload_image(self.url)
+        elif self.chev1 is not None and self.chev2 is None and self.__rayid is not None:
+            self.chev2r = await upload_image(self.url)
+        else:
+            raise ValueError("Image already uploaded")
+    
 
     async def bigjpg_upload(self) -> None:
         # get the api key
         key = apiKeys().bigjpg_key
 
         # check whether chevereto image 1 is uploaded
-        if self.status < 1:
-            raise ValueError("Image is not uploaded to chevereto yet")
-        if self.status > 1:
-            raise ValueError("Image is already uploaded to bigjpg")
+        if self.chev1 is None:
+            raise ValueError("Chevereto image 1 is not uploaded")
+        # check if image has already been sent to upscaler
+        if self.__rayid is not None:
+            raise ValueError("Image has already been sent to upscaler")
 
         # check if all upscale parameters are set
         if any([True for i in [self.x2, self.model, self.noise] if i is None]): # if any of the upscale parameters are not set, raise an error
@@ -229,18 +274,13 @@ class image():
             self.__rayid = response['tid']
         except KeyError:
             raise ValueError("Could not upload image to bigjpg")
-
-        # set the status to 2
-        self.status = 2
-        
+  
 
     async def bigjpg_download(self) -> None:
         # check if a valid rayid is set
         if self.__rayid is None:
             raise ValueError("image not uploaded to bigjpg yet")
 
-        if self.status < 2:
-            raise ValueError("Image is not uploaded to bigjpg yet")
         # creating the API link
         link = f'https://bigjpg.com/api/task/{self.__rayid}'
 
@@ -257,7 +297,8 @@ class image():
 
 
     def end_image(self) -> None:
-        ...
+        self.__save()
+        del self # renders the object useless after the image is saved
 
 
 class apiKeys():
