@@ -29,7 +29,7 @@ def fetch_details(x2, noise, model):
 async def upscale(ctx, image, x2, noise, model):
     """Upscale your images"""
 
-    msg = ctx.respond(content='Processing',ephemeral=True)
+    msg = await ctx.respond(content='Processing',ephemeral=True)
 
     #TODO: Complete upscaling rework
     # fetch the user
@@ -38,12 +38,12 @@ async def upscale(ctx, image, x2, noise, model):
     # check if the user is banned
     flags = user.fetch_flags()
     if 0 in flags or 1 in flags: 
-        msg.edit_original_message(content="You are banned from using this command")
+        await msg.edit_original_message(content="You are banned from using this command")
         return
     
     #check if the user has upscales left
     if user.free_images == 0:
-        msg.edit_original_message(content="You have no free upscales left")
+        await msg.edit_original_message(content="You have no free upscales left")
         return
 
     # initiate an image

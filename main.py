@@ -6,7 +6,7 @@ from dotenv import load_dotenv, find_dotenv
 from os import getenv
 
 # file imports
-from other_files import logging, helpfile, upscale
+from other_files import logging, helpfile, c_upscale
 
 
 # load dotenv and logging
@@ -90,7 +90,7 @@ async def upscale(ctx,
     ):
     """Upscale your images"""
     #TODO: Complete upscaling rework
-    await upscale.upscale(ctx=ctx, image=image, x2=amount, noise=noise_reduction, model=model)
+    await c_upscale.upscale(ctx=ctx, image=image, x2=amount, noise=noise_reduction, model=model)
 
 # * This command is temporarily disabled
 # ban command
