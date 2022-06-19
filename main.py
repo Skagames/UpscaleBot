@@ -6,10 +6,8 @@ from dotenv import load_dotenv, find_dotenv
 from os import getenv
 
 # file imports
-from other_files import logging, helpfile
-#TODO: Fix imports
-#from files import securebase, command_upscale, logger, database, command_ban
-#from files import help as helpfile
+from other_files import logging, helpfile, upscale
+
 
 # load dotenv and logging
 load_dotenv(find_dotenv())
@@ -92,7 +90,7 @@ async def upscale(ctx,
     ):
     """Upscale your images"""
     #TODO: Complete upscaling rework
-    await command_upscale.upscale(ctx=ctx, image=image, x2=amount, noise=noise_reduction, model=model)
+    await upscale.upscale(ctx=ctx, image=image, x2=amount, noise=noise_reduction, model=model)
 
 # * This command is temporarily disabled
 # ban command
