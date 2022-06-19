@@ -9,6 +9,8 @@ __database__ = 'db.json'
 # imports
 from tinydb import TinyDB, Query
 import time
+from models import image
+
 
 class user():
     """
@@ -104,15 +106,47 @@ class user():
 
 
     def __load_from_uid(self):
-        ...
+        # get the database
+        db = TinyDB(__database__)
+        # get the table
+        table = db.table('users')
+        # get the query
+        query = Query()
+        # get the user
+        packed = table.get(query.uid == self.uid)
+        self.uid = packed['uid']
+        self.total_images = packed['total_images']
+        self.joined = packed['joined']
+        self.last_seen = packed['last_seen']    
+        self.free_images = packed['free_images']
+        self.premium_images = packed['premium_images']
+        self.premium_codes = packed['premium_codes']
+        self.user_flags = packed['user_flags']
+        self.images = packed['images']
+        self.banned_until = packed['banned_until']
+        self.banned_reason = packed['banned_reason']
 
 
     def __load_from_image_id(self):
-        ...
+        """
+        this is a helper function for the user class, it fetches the uid from the image and loads from uid
+        """
+        # initialise an image class that loads the image
+        image_obj = image.image(image_id=self.image_id)
+        self.uid = image_obj.uid
+        self.__load_from_uid()
 
 
     def __save(self):
-        ...
+        # get the db
+        db = TinyDB(__database__)
+        # get the table
+        table = db.table('users')
+        # get the query
+        query = Query()
+        packed = self.__pack()
+        # save the user
+        table.upsert(packed, query.uid == self.uid)
 
 
     def __pack(self):
@@ -155,11 +189,12 @@ class user():
         """
         self.user_flags &= ~(1 << flag)
 
-
+    #TODO add ban_user function
     def ban_user(self, time: int, reason: str) -> None:
         ...
+        return NotImplemented
 
 
     def end_user(self):
-        ...
-
+        self.__save()
+        del self # renders the object useless after saving
