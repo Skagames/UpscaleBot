@@ -13,13 +13,11 @@ from other_files import logging, helpfile, c_upscale
 load_dotenv(find_dotenv())
 
 # version and constants
-__version__ = '0.1.0a'
+__version__ = '0.2.0a'
 __changelog__ = f"""
 **{__version__} Changelog**
 ----------------
-- Implemented user ban system if violating ToS
-- Banned users cannot upscale
-- /info command now shows changelog
+- Reworked entire API
 """
 BACKUP_CHANNEL_ID = 972541376375975996
 

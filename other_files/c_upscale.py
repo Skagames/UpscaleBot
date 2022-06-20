@@ -29,7 +29,7 @@ def fetch_details(x2, noise, model):
 async def upscale(ctx, image, x2, noise, model):
     """Upscale your images"""
 
-    msg = await ctx.respond(content='Processing',ephemeral=True)
+    msg = await ctx.respond(content='Processing...',ephemeral=True)
 
     #TODO: Complete upscaling rework
     # fetch the user
