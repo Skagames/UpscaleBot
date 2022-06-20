@@ -39,15 +39,17 @@ async def upscale(ctx, image, x2, noise, model):
     flags = user.fetch_flags()
     if 0 in flags or 1 in flags: 
         await msg.edit_original_message(content="You are banned from using this command")
+        user.end_user()
         return
     
-    #check if the user has upscales left
+    # check if the user has upscales left
     if user.free_images == 0:
         await msg.edit_original_message(content="You have no free upscales left")
+        user.end_user()
         return
 
     # initiate an image
-    img = image_class.image(image=image, uid = ctx.author.id)
+    img = image_class.image(url=image, uid = ctx.author.id)
     details = fetch_details(x2, noise, model)
     img.x2 = details['x2']
     img.noise = details['noise']
@@ -55,29 +57,43 @@ async def upscale(ctx, image, x2, noise, model):
 
     # upload to chev
     await img.chev_upload()
-    #check for errors
+    # check for errors
     #TODO: add error checking
-    ...
+    if img.chev1 == None:
+        await msg.edit_original_message(content="Error uploading to Chev1")
+        user.end_user()
+        img.end_image()
+        return
 
     # upload to bigjpg
     await img.bigjpg_upload()
 
     # start waiting for the image to be processed
     while True:
-        results = await img.bigjpg_upload()
+        await asyncio.sleep(15)
+        results = await img.bigjpg_download()
         if results['status'] == 'success':
             img.url = results['url']
             break
         elif results['status'] == 'error':
             msg.edit_original_message(content="Error: " + results['error'])
+            user.end_user()
+            img.end_image()
             return
         else:
-            await asyncio.sleep(5)
+            continue
 
     # upload the image to chev
     await img.chev_upload()
     # check for errors
-    ...
+    if img.chev2 == None:
+        await msg.edit_original_message(content="Error uploading to Chev2")
+        user.end_user()
+        img.end_image()
+        return
 
     # send image to discord
-    ...
+    await msg.edit_original_message(content=f"Success!\nImage link: {img.chev2}",)
+    user.end_user()
+    img.end_image()
+    return

@@ -209,11 +209,10 @@ class image():
                     except: # in case of Json ContentTypeError
                         r = await resp.read()
                         #r = {'status_code':500}
-            print(r)
             #handle the response
             if r['status_code'] == 400:
                 """Wrong upload"""
-                return {'status':400,'error_code':r['error']['code']}
+                return {'status':400,'error_code':r['error']['code'],'url':None,'id':None}
 
             elif r['status_code'] == 200:
                 """Correctly uploaded"""
@@ -222,21 +221,22 @@ class image():
                         'size':int(r['image']['size']) / 1000000,  # divide size by 1 000 000 for mb
                         'width':int(r['image']['width']),
                         'heigth':int(r['image']['height']),
+                        'id':r['image']['name'],
                         'url':r['image']['url']
                         }
 
             else:
                 """Unknown error, error 404 will be returned"""
-                return {'status':400,'error_code':404}
+                return {'status':400,'error_code':404,'url': None,'id':None}
 
         if self.chev1 is None and self.chev2 is None and self.__rayid is None:
             self.chev1r = await upload_image(self.url)
             self.chev1 = self.chev1r['url']
-            self.id = self.chev1[32:]
+            self.id = self.chev1r['id'] or 0
         elif self.chev1 is not None and self.chev2 is None and self.__rayid is not None:
             self.chev2r = await upload_image(self.url)
             self.chev2 = self.chev2r['url']
-            self.id = self.chev2[32:]
+            self.id = self.chev2r['id'] or 0
         else:
             raise ValueError("Image already uploaded")
     
@@ -250,6 +250,7 @@ class image():
             raise ValueError("Chevereto image 1 is not uploaded")
         # check if image has already been sent to upscaler
         if self.__rayid is not None:
+            print(self.__rayid)
             raise ValueError("Image has already been sent to upscaler")
 
         # check if all upscale parameters are set
