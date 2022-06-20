@@ -27,7 +27,7 @@ class image():
     - chev2: the second image link on chevereto.
     - chev1r: the response from chevereto for the first image.
     - chev2r: the response from chevereto for the second image.
-    - __rayid: the bigjpg ray id of the image.
+    - _rayid: the bigjpg ray id of the image.
 
     - timestamp1: the time the image was first received.
     - timestamp2: the time the image was ended.
@@ -73,7 +73,7 @@ class image():
         self.chev2 = None
         self.chev1r = None
         self.chev2r = None
-        self.__rayid = None
+        self._rayid = None
         self.timestamp1 = None
         self.timestamp2 = None
         self.x2 = None
@@ -134,7 +134,7 @@ class image():
         self.chev2 = packed['chev2']
         self.chev1r = packed['chev1r']
         self.chev2r = packed['chev2r']
-        self.__rayid = packed['rayid']
+        self._rayid = packed['rayid']
         self.timestamp1 = packed['timestamp1']
         self.timestamp2 = packed['timestamp2']
         self.x2 = packed['x2']
@@ -170,7 +170,7 @@ class image():
             'chev2': self.chev2,
             'chev1r': self.chev1r,
             'chev2r': self.chev2r,
-            'rayid': self.__rayid,
+            'rayid': self._rayid,
             'timestamp1': self.timestamp1,
             'timestamp2': self.timestamp2,
             'x2': self.x2,
@@ -227,11 +227,11 @@ class image():
                 """Unknown error, error 404 will be returned"""
                 return {'status':400,'error_code':404,'url': None,'id':None}
 
-        if self.chev1 is None and self.chev2 is None and self.__rayid is None:
+        if self.chev1 is None and self.chev2 is None and self._rayid is None:
             self.chev1r = await upload_image(self.url)
             self.chev1 = self.chev1r['url']
             self.id = self.chev1r['id'] or 0
-        elif self.chev1 is not None and self.chev2 is None and self.__rayid is not None:
+        elif self.chev1 is not None and self.chev2 is None and self._rayid is not None:
             self.chev2r = await upload_image(self.url)
             self.chev2 = self.chev2r['url']
             self.id = self.chev2r['id'] or 0
@@ -247,8 +247,8 @@ class image():
         if self.chev1 is None:
             raise ValueError("Chevereto image 1 is not uploaded")
         # check if image has already been sent to upscaler
-        if self.__rayid is not None:
-            print(self.__rayid)
+        if self._rayid is not None:
+            print(self._rayid)
             raise ValueError("Image has already been sent to upscaler")
 
         # check if all upscale parameters are set
@@ -274,25 +274,25 @@ class image():
                 response = await r.json()
 
         try:
-            self.__rayid = response['tid']
+            self._rayid = response['tid']
         except KeyError:
             raise ValueError("Could not upload image to bigjpg")
   
 
     async def bigjpg_download(self) -> None:
         # check if a valid rayid is set
-        if self.__rayid is None:
+        if self._rayid is None:
             raise ValueError("image not uploaded to bigjpg yet")
 
         # creating the API link
-        link = f'https://bigjpg.com/api/task/{self.__rayid}'
+        link = f'https://bigjpg.com/api/task/{self._rayid}'
 
         # requesting the result data
         async with aiohttp.ClientSession() as session:
             async with session.get(url=link) as r:
                 # extract result data
                 result_data = await r.json()
-                result_data = result_data[self.__rayid]
+                result_data = result_data[self._rayid]
                 status = result_data['status']
                 url = result_data['url']
 
