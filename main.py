@@ -13,12 +13,10 @@ from other_files import logging, helpfile, c_upscale
 load_dotenv(find_dotenv())
 
 # version and constants
-__version__ = '0.2.0a'
-__changelog__ = f"""
-**{__version__} Changelog**
-----------------
-- Reworked entire API
-"""
+from other_files import version
+__version__ = version.version
+__changelog__ = version.changelog
+
 BACKUP_CHANNEL_ID = 972541376375975996
 
 # connect to client and bot
