@@ -57,7 +57,6 @@ class image():
 
     """
     def __init__(self,**kwargs) -> None:
-        print(len(kwargs))
         """
         Initialiser for the image class.
         Accepted keyword arguments:
@@ -115,8 +114,7 @@ class image():
         return "Image: {0}".format(self.id) if self.id is not None else "Image: Not saved yet"
 
 
-    #TODO: Packed is not actually given and is just a placeholder
-    def __load(self,packed) -> None:
+    def __load(self) -> None:
         """
         Loads the image from the database.
         """
@@ -293,7 +291,8 @@ class image():
         async with aiohttp.ClientSession() as session:
             async with session.get(url=link) as r:
                 # extract result data
-                result_data = await r.json()[self.__rayid]
+                result_data = await r.json()
+                result_data = result_data[self.__rayid]
                 status = result_data['status']
                 url = result_data['url']
 
