@@ -62,3 +62,26 @@ class upscaleEmbeds():
         embed.add_field(name="you can download your image", value=linked, inline=False)
         embed.set_footer(text="UpscaleBot by !SKA#0001")
         return(embed)
+
+
+class helpEmbeds():
+    """
+    Embeds for the help command
+    """
+    def __init__(self):
+        pass
+
+    def help_embed(self):
+        embed=discord.Embed(title=f"Upscale Bot V{__version__}", description="How to use the upscaler?\nArguments in [] are required, <> is optional", color=0xffa800)
+        embed.set_thumbnail(url="https://skahosting.xyz/c/images/BnNg.png")
+        embed.add_field(name="/help", value="You are currently here!", inline=False)
+        embed.add_field(name="/ping", value="Bot ping and changelog", inline=False)
+        embed.add_field(name="/upscale <link>",value="This is the main command to upscale images! \
+                        \nThe command works like this: /upscale [image] <amount> <noise_reduction> <model> \
+                        \n - Image: the image you want to upscale (add as an attachment) \
+                        \n - Amount: the amount of times you want to upscale the image \
+                        \n - Noise_reduction: The amount of noise reduction you want to apply to the upscaled image \
+                        \n - Model: Which model you would like to use for the image",inline=False)
+        embed.add_field(name="Need more help?",value="You can join our support server => [here](https://skahosting.xyz/support)",inline=False)
+        embed.set_footer(text="UpscaleBot by !SKA#0001")
+        return(embed)

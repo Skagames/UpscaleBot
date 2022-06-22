@@ -6,7 +6,7 @@ from dotenv import load_dotenv, find_dotenv
 from os import getenv
 
 # file imports
-from other_files import logging, helpfile, c_upscale
+from other_files import logging, c_upscale, embeds, admin
 
 
 # load dotenv and logging
@@ -21,7 +21,7 @@ BACKUP_CHANNEL_ID = 972541376375975996
 
 # connect to client and bot
 intents = discord.Intents.default()
-bot = commands.Bot(debug_guilds=[739630717159473192],command_prefix='.', intents=intents, help_command=None)
+bot = commands.Bot(debug_guilds=[739630717159473192], intents=intents, help_command=None)
 
 
 # on bot ready
@@ -39,6 +39,7 @@ async def upload_db():
     id = bot.get_channel(BACKUP_CHANNEL_ID) # 972541376375975996 is the channel id of #db-backups in the Ska's bots server
     await id.send(file=discord.File('db.json'))
     await id.send(file=discord.File('log.txt'))
+    logging.log("Database backup uploaded.")
 @upload_db.before_loop
 async def before_upload_db():
     global bot
@@ -57,7 +58,7 @@ async def ping(ctx):
 async def help(ctx):
     """Get help with commands"""
     #TODO: Remake help command
-    await helpfile.help(ctx,__version__)
+    await ctx.respond(embed = embeds.helpEmbeds().help_embed(), ephemeral = True)
     logging.log(f"{ctx.author} used help command")
 
 
@@ -110,14 +111,54 @@ async def ban_user(ctx,
     #await command_ban.permanent(ctx, user,time,reason)
     await ctx.respond(f"This command is temporarily disabled")
 
-#! Remove in main build
-#test command
-@bot.slash_command()
-async def test(ctx):
-    """Test command"""
-    await ctx.respond("Test command")
+#! Admin only commands
+# Change flags value of a user
+@bot.slash_command(guild_ids=[739630717159473192]) #! Do not remove the guild_ids
+async def change_flags(
+    ctx,
+    user: Option(
+        str,
+        "The user you want to change the flags of (discord id)",
+        required=True),
+    new_flag_value: Option(
+        int,
+        "The new flag value: WARNING: YOU CAN OVERWRITE YOUR OWN FLAGS",
+        required=True
+        )
+    ):
+    """
+    This is an admin only command.
+    """
+    await admin.change_flags(ctx, user, new_flag_value)
 
+# calculate flag value
+@bot.slash_command(guild_ids=[739630717159473192]) #! Do not remove the guild_ids
+async def calculate_flag_value(
+    ctx,
+    flags: Option(
+        str,
+        "The flags, seperated by comma (1,4,5,8)",
+        required=False
+    ),
+    flag_list: Option(
+        str,
+        "If you want to see the list of flags",
+        choices = ['True','False'],
+        required=False
+    )
+):
+    """
+    This is an admin only command.
+    """
+    await admin.calculate_flag_value(ctx, flags, flag_list)
 
+@bot.slash_command(guild_ids=[739630717159473192]) #! Do not remove the guild_ids
+async def fetch_logs(ctx):
+    """
+    This is an admin only command.
+    """
+    await admin.fetch_logs(ctx)
+   
 #start the tasks
 upload_db.start()
 
