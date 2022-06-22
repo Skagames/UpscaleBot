@@ -39,12 +39,15 @@ async def upscale(ctx, image, x2, noise, model):
     flags = user.fetch_flags()
     if 0 in flags or 1 in flags: 
         await msg.edit_original_message(embed=embeds.upscaleEmbeds().userbanned(user.uid))
+        logging.log(f"{user.id} used upscale command but was banned")
         user.end_user()
+
         return
     
     # check if the user has upscales left
     if user.free_images == 0:
         await msg.edit_original_message(embed= embeds.upscaleEmbeds().no_upscales_left())
+        logging.log(f"{user.id} used upscale command but has no upscales left")
         user.end_user()
         return
 
@@ -60,6 +63,7 @@ async def upscale(ctx, image, x2, noise, model):
     # check for errors
     if img.chev1 == None:
         await msg.edit_original_message(embed = embeds.upscaleEmbeds().upscale_api_error(user.uid))
+        logging.log(f"{user.id} used upscale command but the API returned an error")
         user.end_user()
         img.end_image()
         return
@@ -79,6 +83,7 @@ async def upscale(ctx, image, x2, noise, model):
             break
         elif results['status'] == 'error':
             msg.edit_original_message(embed = embeds.upscaleEmbeds().upscale_api_error(user.uid))
+            logging.log(f"{user.id} used upscale command but the API returned an error")
             user.end_user()
             img.end_image()
             return
@@ -90,12 +95,14 @@ async def upscale(ctx, image, x2, noise, model):
     # check for errors
     if img.chev2 == None:
         await msg.edit_original_message(embed = embeds.upscaleEmbeds().upscale_api_error(user.uid))
+        logging.log(f"{user.id} used upscale command but the API returned an error")
         user.end_user()
         img.end_image()
         return
 
     # send image to discord
     await msg.edit_original_message(embed= embeds.upscaleEmbeds().upscale_success(img.chev2, img._rayid, user.uid))
+    logging.log(f"{user.id} used upscale command and upscaled: {img.chev2}")
     user.end_user()
     img.end_image()
     return

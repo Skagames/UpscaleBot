@@ -34,7 +34,8 @@ class user():
         - 1 << 3: user has permanent premium & upscales [courtesy of the admins]
         - 1 << 4: user has been previously banned
         - 1 << 5: is admin user
-        - 1 << 6-16: reserved for future use 
+        - 1 << 6: has beta permissions
+        - 1 << 7-16: reserved for future use 
 
     - images: list of all image ids the user has uploaded.
     - banned_until: the time the user is banned until. None if not banned.
@@ -177,7 +178,7 @@ class user():
         """
         Fetches a list of all flags the user has.
         """
-        return [i for i in range(16) if self.user_flags & (1 << i)]
+        return [i for i in range(16) if self.user_flags & (1 << i)] # range is 16 because there are max 16 flags
 
 
     def __add_flag(self, flag: int) -> None:
