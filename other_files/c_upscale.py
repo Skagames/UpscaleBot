@@ -31,11 +31,13 @@ async def upscale(ctx, image, x2, noise, model):
 
     msg = await ctx.respond(embed=embeds.upscaleEmbeds().processing(),ephemeral=True)
 
-    #TODO: Complete upscaling rework
     # fetch the user
     user = user_class.user(uid=ctx.author.id)
 
     # check if the user is banned
+    """
+    Bans are an overarching flag, it is more important than any other flag.
+    """
     flags = user.fetch_flags()
     if 0 in flags or 1 in flags: 
         await msg.edit_original_message(embed=embeds.upscaleEmbeds().userbanned(user.uid))
@@ -45,7 +47,7 @@ async def upscale(ctx, image, x2, noise, model):
         return
     
     # check if the user has upscales left
-    if user.free_images == 0:
+    if user.free_images == 0 and 3 not in user.fetch_flags(): # 3 in the flags is permanently free
         await msg.edit_original_message(embed= embeds.upscaleEmbeds().no_upscales_left())
         logging.log(f"{user.id} used upscale command but has no upscales left")
         user.end_user()
@@ -102,7 +104,14 @@ async def upscale(ctx, image, x2, noise, model):
 
     # send image to discord
     await msg.edit_original_message(embed= embeds.upscaleEmbeds().upscale_success(img.chev2, img._rayid, user.uid))
+
+    # log the image
     logging.log(f"{user.id} used upscale command and upscaled: {img.chev2}")
+
+    # remove one image from the free upscales (not for permanent free users/admins)
+    if 3 not in user.fetch_flags() and 5 not in user.fetch_flags():
+        user.free_images -= 1
+
     user.end_user()
     img.end_image()
     return
