@@ -28,7 +28,7 @@ bot = commands.Bot(debug_guilds=[739630717159473192], intents=intents, help_comm
 @bot.event
 async def on_ready():
     print("Logged in as {0.user}".format(bot))
-    await bot.change_presence(status=discord.Status.online, activity=discord.Game(f"UB_DevB V{__version__}"))
+    await bot.change_presence(status=discord.Status.online, activity=discord.Game(f"V{__version__}"))
     #TODO: Fix Loggin
     logging.log(f"Logged in as {bot.user}")
 

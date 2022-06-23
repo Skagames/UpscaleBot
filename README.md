@@ -16,3 +16,9 @@ V0.2.1a
 - Improved logging
 - /changeflags + /calculate_flag_value is now available for admins
 - /fetch_logs is now available for admins
+
+V0.2.1b
+- When users upscale their free amount goes down
+    - The amount goes down first and gets refunded if fail.
+- made check for permanent premium accounts
+- changed upscale command to be visible to anyone

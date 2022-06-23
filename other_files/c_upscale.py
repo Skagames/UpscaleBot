@@ -29,25 +29,30 @@ def fetch_details(x2, noise, model):
 async def upscale(ctx, image, x2, noise, model):
     """Upscale your images"""
 
-    msg = await ctx.respond(embed=embeds.upscaleEmbeds().processing(),ephemeral=True)
+    msg = await ctx.respond(embed=embeds.upscaleEmbeds().processing(),ephemeral=False)
 
-    #TODO: Complete upscaling rework
     # fetch the user
     user = user_class.user(uid=ctx.author.id)
+    user.take_image() # removes one image from the user
 
     # check if the user is banned
+    """
+    Bans are an overarching flag, it is more important than any other flag.
+    """
     flags = user.fetch_flags()
     if 0 in flags or 1 in flags: 
         await msg.edit_original_message(embed=embeds.upscaleEmbeds().userbanned(user.uid))
-        logging.log(f"{user.id} used upscale command but was banned")
+        logging.log(f"{user.uid} used upscale command but was banned")
+        user.refund_image()
         user.end_user()
 
         return
     
     # check if the user has upscales left
-    if user.free_images == 0:
+    if user.free_images < 0 and 3 not in user.fetch_flags(): # 3 in the flags is permanently free
         await msg.edit_original_message(embed= embeds.upscaleEmbeds().no_upscales_left())
-        logging.log(f"{user.id} used upscale command but has no upscales left")
+        logging.log(f"{user.uid} used upscale command but has no upscales left")
+        user.refund_image()
         user.end_user()
         return
 
@@ -63,7 +68,8 @@ async def upscale(ctx, image, x2, noise, model):
     # check for errors
     if img.chev1 == None:
         await msg.edit_original_message(embed = embeds.upscaleEmbeds().upscale_api_error(user.uid))
-        logging.log(f"{user.id} used upscale command but the API returned an error")
+        logging.log(f"{user.uid} used upscale command but the API returned an error")
+        user.refund_image()
         user.end_user()
         img.end_image()
         return
@@ -83,7 +89,8 @@ async def upscale(ctx, image, x2, noise, model):
             break
         elif results['status'] == 'error':
             msg.edit_original_message(embed = embeds.upscaleEmbeds().upscale_api_error(user.uid))
-            logging.log(f"{user.id} used upscale command but the API returned an error")
+            logging.log(f"{user.uid} used upscale command but the API returned an error")
+            user.refund_image()
             user.end_user()
             img.end_image()
             return
@@ -95,14 +102,18 @@ async def upscale(ctx, image, x2, noise, model):
     # check for errors
     if img.chev2 == None:
         await msg.edit_original_message(embed = embeds.upscaleEmbeds().upscale_api_error(user.uid))
-        logging.log(f"{user.id} used upscale command but the API returned an error")
+        logging.log(f"{user.uid} used upscale command but the API returned an error")
+        user.refund_image()
         user.end_user()
         img.end_image()
         return
 
     # send image to discord
     await msg.edit_original_message(embed= embeds.upscaleEmbeds().upscale_success(img.chev2, img._rayid, user.uid))
-    logging.log(f"{user.id} used upscale command and upscaled: {img.chev2}")
+
+    # log the image
+    logging.log(f"{user.uid} used upscale command and upscaled: {img.chev2}")
+
     user.end_user()
     img.end_image()
     return
