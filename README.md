@@ -19,4 +19,6 @@ V0.2.1a
 
 V0.2.1b
 - When users upscale their free amount goes down
+    - The amount goes down first and gets refunded if fail.
 - made check for permanent premium accounts
+- changed upscale command to be visible to anyone

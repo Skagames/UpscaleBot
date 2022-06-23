@@ -57,6 +57,9 @@ class user():
 
     - ban_user: bans the user for a certain amount of time.
 
+    - take_image: removes 1 image from free_images. (This function exists to prevent database desyncing)
+    - refund_image: adds 1 image to free_images.
+
     - end_user: ends the user and saves to db.
     """
 
@@ -181,18 +184,32 @@ class user():
         return [i for i in range(16) if self.user_flags & (1 << i)] # range is 16 because there are max 16 flags
 
 
-    def __add_flag(self, flag: int) -> None:
+    def add_flag(self, flag: int) -> None:
         """
         adds a flag to the user.
         """
         self.user_flags |= 1 << flag
 
 
-    def __remove_flag(self, flag) -> None:
+    def remove_flag(self, flag) -> None:
         """
         Removes a flag from the user.
         """
         self.user_flags &= ~(1 << flag)
+
+    def take_image(self) -> None:
+        """
+        Removes 1 image from free_images. (This function exists to prevent database desyncing)
+        """
+        self.free_images -= 1
+        self.__save()
+
+    def refund_image(self) -> None:
+        """
+        Adds 1 image to free_images.
+        """
+        self.free_images += 1
+        self.__save()
 
     #TODO add ban_user function
     def ban_user(self, time: int, reason: str) -> None:
