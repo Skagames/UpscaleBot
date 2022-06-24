@@ -4,5 +4,4 @@ Currently supported settings:
 - lookup free upscales left
 - lookup premium upscales left
 - change to ephemeral upscale
-
 """
