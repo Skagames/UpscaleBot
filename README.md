@@ -27,3 +27,7 @@ V0.2.1rc1
 - Release candidate 1 of the 0.2.1 update
 - joined and last_seen attributes of user have been assigned
 - image attribute and total images of user class is assigned
+
+
+V0.2.1
+- Cleaned up code for release.
