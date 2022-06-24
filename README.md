@@ -31,3 +31,6 @@ V0.2.1rc1
 
 V0.2.1
 - Cleaned up code for release.
+
+v0.3.0a1
+- First alpha for the settings update

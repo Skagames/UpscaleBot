@@ -40,6 +40,7 @@ class user():
     - images: list of all image ids the user has uploaded.
     - banned_until: the time the user is banned until. None if not banned.
     - banned_reason: the reason the user is banned. None if not banned.
+    - settings: a dict with customised user settings
 
     Methods:
     - __init__: initialiser for the user class.
@@ -92,6 +93,7 @@ class user():
         self.images = []
         self.banned_until = None
         self.banned_reason = None
+        self.settings = None
 
         # load the user
         if self.uid is not None:
@@ -134,6 +136,7 @@ class user():
         self.images = packed['images']
         self.banned_until = packed['banned_until']
         self.banned_reason = packed['banned_reason']
+        self.settings = packed['settings']
 
 
     def __load_from_image_id(self):
@@ -173,7 +176,8 @@ class user():
             'user_flags': self.user_flags,
             'images': self.images,
             'banned_until': self.banned_until,
-            'banned_reason': self.banned_reason
+            'banned_reason': self.banned_reason,
+            'settings': self.settings
         }
         return packed
 
