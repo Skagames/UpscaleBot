@@ -6,18 +6,17 @@ from dotenv import load_dotenv, find_dotenv
 from os import getenv
 
 # file imports
-from other_files import logging, c_upscale, embeds, admin
+from other_files import logging, c_upscale, embeds, admin, version
 
 
 # load dotenv and logging
 load_dotenv(find_dotenv())
 
 # version and constants
-from other_files import version
 __version__ = version.version
 __changelog__ = version.changelog
 
-BACKUP_CHANNEL_ID = 972541376375975996
+BACKUP_CHANNEL_ID = 972541376375975996 #? currently hard coded, should go to the .env
 
 # connect to client and bot
 intents = discord.Intents.default()
@@ -52,7 +51,8 @@ async def ping(ctx):
     """Get bot ping and basic info"""
     await ctx.respond(f"UpscaleBot V{__version__}: ({round((bot.latency * 1000))}ms)\n{__changelog__}")
     logging.log(f"{ctx.author} used ping command")
-    
+
+
 # help command
 @bot.slash_command()
 async def help(ctx):
@@ -89,6 +89,7 @@ async def upscale(ctx,
     #TODO: Complete upscaling rework
     await c_upscale.upscale(ctx=ctx, image=image, x2=amount, noise=noise_reduction, model=model)
 
+
 # * This command is temporarily disabled
 # ban command
 @bot.slash_command(guild_ids=[739630717159473192]) #! Do not remove the guild_ids!
@@ -110,6 +111,7 @@ async def ban_user(ctx,
     #TODO: Completely rework ban system
     #await command_ban.permanent(ctx, user,time,reason)
     await ctx.respond(f"This command is temporarily disabled")
+
 
 #! Admin only commands
 # Change flags value of a user
@@ -137,7 +139,7 @@ async def calculate_flag_value(
     ctx,
     flags: Option(
         str,
-        "The flags, seperated by comma (1,4,5,8)",
+        "The flags, seperated by comma f.ex: 1,4,5,8",
         required=False
     ),
     flag_list: Option(
@@ -163,6 +165,5 @@ async def fetch_logs(ctx):
 upload_db.start()
 
 # get bot token and run bot
-#TODO: Fix token
 token = getenv('bot_token')
 bot.run(token)

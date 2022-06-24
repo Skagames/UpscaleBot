@@ -22,3 +22,8 @@ V0.2.1b
     - The amount goes down first and gets refunded if fail.
 - made check for permanent premium accounts
 - changed upscale command to be visible to anyone
+
+V0.2.1rc1
+- Release candidate 1 of the 0.2.1 update
+- joined and last_seen attributes of user have been assigned
+- image attribute and total images of user class is assigned
