@@ -53,14 +53,14 @@ class upscaleEmbeds():
         embed.set_footer(text=f"UpscaleBot V{__version__}")
         return(embed)
 
-    def upscale_success(self, link, rayid, uid):
+    def upscale_success(self, link, rayid, uid,amount_left):
         titledesc = '<@' + str(uid) + '> id: `' + rayid + '`' 
         linked = '[Here](' + link + ')'
         embed=discord.Embed(title="Upscale Success!", description=titledesc,color=0x00c800)
         embed.set_image(url=link)
         embed.set_thumbnail(url="https://skahosting.xyz/c/images/Biuw.png")
         embed.add_field(name="you can download your image", value=linked, inline=False)
-        embed.set_footer(text="UpscaleBot by !SKA#0001")
+        embed.set_footer(text=f"You have {amount_left} free upscales remaining this month")
         return(embed)
 
 

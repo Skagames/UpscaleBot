@@ -112,7 +112,7 @@ async def upscale(ctx, image, x2, noise, model):
         return
 
     # send image to discord
-    await msg.edit_original_message(embed= embeds.upscaleEmbeds().upscale_success(img.chev2, img._rayid, user.uid))
+    await msg.edit_original_message(embed= embeds.upscaleEmbeds().upscale_success(img.chev2, img._rayid, user.uid, user.free_images))
 
     # log the image
     logging.log(f"{user.uid} used upscale command and upscaled: {img.chev2}")
