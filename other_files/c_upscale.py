@@ -2,6 +2,8 @@ from models import image as image_class
 from models import user as user_class
 from other_files import logging, embeds
 import asyncio
+import time
+
 
 def fetch_details(x2, noise, model):
     """return the correct definitions of the parameters"""
@@ -34,6 +36,7 @@ async def upscale(ctx, image, x2, noise, model):
     # fetch the user
     user = user_class.user(uid=ctx.author.id)
     user.take_image() # removes one image from the user
+    user.last_seen = time.time() // 1 # sets the last_seen time of the user to now.
 
     # check if the user is banned
     """
@@ -114,6 +117,9 @@ async def upscale(ctx, image, x2, noise, model):
     # log the image
     logging.log(f"{user.uid} used upscale command and upscaled: {img.chev2}")
 
+    # add an image to the total upscaled images
+    user.total_images += 1
+    user.images.append(img.id)
     user.end_user()
     img.end_image()
     return

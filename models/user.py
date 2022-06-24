@@ -120,6 +120,7 @@ class user():
         packed = table.get(query.uid == self.uid)
         if packed is None:
             self.free_images = 5
+            self.joined = time.time() // 1
             self.__save()
             packed = table.get(query.uid == self.uid)
         self.uid = packed['uid']
