@@ -1,5 +1,5 @@
 Rem set the path to the correct location of the bat file
-REM set path=%~dp0
+set path=%~dp0
 
 Rem Activate the correct environment
 call %path%/venv/Scripts/activate
