@@ -85,3 +85,14 @@ class helpEmbeds():
         embed.add_field(name="Need more help?",value="You can join our support server => [here](https://skahosting.xyz/support)",inline=False)
         embed.set_footer(text="UpscaleBot by !SKA#0001")
         return(embed)
+
+
+class settingsEmbeds():
+    def __init__(self) -> None:
+        pass
+
+    def show(self,avatar_url,name):
+        embed = discord.Embed(title=f"Settings", description="Your current active settings will be displayed here", color=0xffa800)
+        embed.set_thumbnail(url=avatar_url)
+        embed.add_field(name="", value="")
+        return embed

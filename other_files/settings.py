@@ -19,9 +19,28 @@ class settings():
     Methods:
     - show: shows the main settings page
     """
-    def __init__(self,uid: int) -> None:
-        self.user = user.user(uid=uid) # initialize user object
+    def __init__(self, ctx, uid: int) -> None:
+        """
+        Initialises the settings by user.
+        Ctx is needed to fetch the user's current avatar for setting embeds
+        """
+        # get the user name and avatar
+        self.username = ctx.author.name
+        self.avatar = ctx.author.avatar_url
 
+        # initialize user object
+        self.user = user.user(uid=uid)
 
-    def show(self):
-        ...
+        # fetches the data from the database
+        self.settings = self.user.settings
+        self.free_upscales_left = self.user.free_images
+
+    async def show(self):
+        """
+        This functions fetches and shows all the current settings the user has
+        Current known settings:
+        - Ephemeral: Bool
+        - Free_upscales_left: int
+        """
+        await self.ctx.respond(embed=embeds.settingsEmbeds().show(self.avatar, self.username))
+        
